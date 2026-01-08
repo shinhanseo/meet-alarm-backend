@@ -164,10 +164,10 @@ function buildRouteDto(itinerary: any) {
   return { summary, segments };
 }
 
-router.get("/find", async (req, res) => {
+router.post("/find", async (req, res) => {
   try {
-    const { startX, startY, endX, endY } = req.query;
-
+    const { startX, startY, endX, endY } = req.body;
+    
     if (!startX || !startY || !endX || !endY) {
       return res.status(400).json({
         message: "startX, startY, endX, endY 좌표가 필요합니다",
@@ -203,9 +203,9 @@ router.get("/find", async (req, res) => {
       ...buildRouteDto(it),
     }));
 
-    // (선택) 최단 시간순 정렬
+    // 최단 시간순 정렬
     routes.sort((a, b) => a.summary.totalTimeMin - b.summary.totalTimeMin);
-
+    
     return res.json({
       routesCount: routes.length,
       routes,
