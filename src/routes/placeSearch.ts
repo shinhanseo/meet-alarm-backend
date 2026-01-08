@@ -16,12 +16,12 @@ router.get("/search", async (req, res) => {
     const [kw, addr] = await Promise.all([
       axios.get("https://dapi.kakao.com/v2/local/search/keyword.json", {
         headers,
-        params: { query: q, size: 10 },
+        params: { query: q, size: 15 },
         timeout: 5000,
       }),
       axios.get("https://dapi.kakao.com/v2/local/search/address.json", {
         headers,
-        params: { query: q, size: 10 },
+        params: { query: q, size: 15 },
         timeout: 5000,
       }),
     ]);
