@@ -57,5 +57,56 @@ router.get("/search", async (req, res) => {
   }
 });
 
+router.get("/map-pick", async(req, res) => {
+  try{
+    const { lat, lng } = req.query;
 
+    const latNum = Number(lat);
+    const lngNum = Number(lng);
+
+    const kakaoRes = await axios.get(
+      "https://dapi.kakao.com/v2/local/geo/coord2address.json",
+      {
+        headers: {
+          Authorization: `KakaoAK ${process.env.KAKAO_REST_API_KEY}`,
+        },
+        params: {
+          x: lng,
+          y: lat,
+        },
+        timeout: 5000,
+      }
+    )
+
+    const doc = kakaoRes.data?.documents?.[0];
+    if(!doc){
+      return res.status(404).json({message : "주소 결과가 없습니다."});
+    }
+
+    const road = doc.road_address?.address_name;
+    const jibun = doc.address?.address_name;
+    const address = road || jibun || "";
+    const buildingName = doc.road_address?.building_name;
+
+    const name =  doc.road_address?.road_name ||
+                  doc.address?.region_3depth_name ||
+                  (address ? address.split(" ").slice(-2).join(" ") : "선택한 위치");
+
+    return res.json({
+      place: {
+        name,
+        address,
+        buildingName,
+        lat: latNum,
+        lng: lngNum,
+      },
+    });
+
+  }catch(err : any){
+    return res.status(500).json({
+      message: "reverse-geocode 실패",
+      detail: err?.response?.data || String(err),
+    });
+  }
+})
 export default router;
