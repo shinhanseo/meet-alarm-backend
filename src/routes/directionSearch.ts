@@ -181,7 +181,7 @@ router.post("/find", async (req, res) => {
         startY: Number(startY),
         endX: Number(endX),
         endY: Number(endY),
-        count: 5,
+        count: 10,
       },
       {
         headers: {
