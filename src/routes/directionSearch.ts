@@ -167,7 +167,7 @@ function buildRouteDto(itinerary: any) {
 router.post("/find", async (req, res) => {
   try {
     const { startX, startY, endX, endY } = req.body;
-    
+
     if (!startX || !startY || !endX || !endY) {
       return res.status(400).json({
         message: "startX, startY, endX, endY 좌표가 필요합니다",
@@ -204,8 +204,30 @@ router.post("/find", async (req, res) => {
     }));
 
     // 최단 시간순 정렬
-    routes.sort((a, b) => a.summary.totalTimeMin - b.summary.totalTimeMin);
-    
+    routes.sort((a, b) => {
+      const aTransfer = a.summary.transferCount ?? 999;
+      const bTransfer = b.summary.transferCount ?? 999;
+
+      const aTime = a.summary.totalTimeMin ?? 99999;
+      const bTime = b.summary.totalTimeMin ?? 99999;
+
+      const aOver = aTransfer >= 3;
+      const bOver = bTransfer >= 3;
+
+      // 1) 환승 3회 이상은 무조건 뒤로
+      if (aOver !== bOver) {
+        return aOver ? 1 : -1; // a가 3회 이상이면 뒤로
+      }
+
+      // 2) 둘 다 3회 미만이면 시간 우선
+      if (aTime !== bTime) {
+        return aTime - bTime;
+      }
+
+      // 3) 시간이 같으면 환승 적은 순
+      return aTransfer - bTransfer;
+    });
+
     return res.json({
       routesCount: routes.length,
       routes,
