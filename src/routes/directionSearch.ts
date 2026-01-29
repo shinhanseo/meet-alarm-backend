@@ -1,5 +1,6 @@
 import { Router } from "express";
 import axios from "axios";
+import { apiLogCall } from "./dbSave.js";
 
 const router = Router();
 
@@ -165,7 +166,10 @@ function buildRouteDto(itinerary: any) {
 }
 
 router.post("/find", async (req, res) => {
+  const installId = String(req.header("x-install-id") || "");
+
   try {
+
     const { startX, startY, endX, endY } = req.body;
 
     if (!startX || !startY || !endX || !endY) {
@@ -191,6 +195,15 @@ router.post("/find", async (req, res) => {
         timeout: 10000,
       }
     );
+
+    if (installId) {
+      apiLogCall({
+        installId,
+        apiName: "tmap.direction_find",
+        statusCode: response.status,
+      }).catch(() => { });
+    }
+
 
     const itineraries = response.data?.metaData?.plan?.itineraries ?? [];
 
@@ -232,7 +245,16 @@ router.post("/find", async (req, res) => {
       routesCount: routes.length,
       routes,
     });
-  } catch (err) {
+  } catch (err: any) {
+    const status = err?.response?.status ?? 0;
+    if (installId) {
+      apiLogCall({
+        installId,
+        apiName: "tmap.transit.routes",
+        statusCode: status,
+      }).catch(() => { });
+    }
+
     console.error(err);
     return res.status(500).json({
       message: "길찾기 API 호출 실패",

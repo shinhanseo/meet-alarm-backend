@@ -13,6 +13,30 @@ type Body = {
   destPlace: Place;
 };
 
+export async function apiLogCall(params: {
+  installId: string,
+  apiName: string,
+  statusCode: number;
+}) {
+  const { installId, apiName, statusCode } = params;
+
+  try {
+    await pool.query(
+      `
+        INSERT INTO api_requests ( install_id, api_name, status_code )
+        VALUES ($1, $2, $3);
+      `, [
+      installId,
+      apiName,
+      statusCode,
+    ]
+    )
+  } catch (err) {
+    console.log("api 저장 실패", err);
+  }
+}
+
+
 router.post("/install", async (req, res) => {
   const { installId, platform, osVersion, deviceModel } = req.body ?? {};
 
@@ -81,8 +105,76 @@ router.post("/meeting", async (req, res) => {
 
   } catch (e) {
     console.log(e);
-    return res.status(400).json({ message: "db error" });
+    return res.status(400).json({ message: "약속 저장 오류" });
   }
-})
+});
+
+router.put("/meeting/:id", async (req, res) => {
+  const id = Number(req.params.id);
+  const { title, meetingAt, originPlace, destPlace } = req.body;
+
+  if (!title || !meetingAt || !originPlace || !destPlace) {
+    return res.status(400).json({ message: "필수 요소가 빠졌습니다." });
+  }
+
+  try {
+    const result = await pool.query(
+      `
+        UPDATE appointments 
+        SET 
+          title = $1,
+          meeting_at = $2,
+          origin_name = $3,
+          origin_address = $4,
+          origin_lat = $5,
+          origin_lng = $6,
+          dest_name = $7,
+          dest_address = $8,
+          dest_lat = $9,
+          dest_lng = $10
+        WHERE id = $11
+      `,
+      [
+        title,
+        meetingAt,
+        originPlace.name,
+        originPlace.address,
+        originPlace.lat,
+        originPlace.lng,
+        destPlace.name,
+        destPlace.address,
+        destPlace.lat,
+        destPlace.lng,
+        id
+      ]
+    );
+
+    return res.status(200).json({ message: "업데이트 성공" });
+  } catch (e) {
+    console.log("약속 업데이트 실패", e);
+    res.status(400).json({ message: "약속 업데이트 오류" });
+  }
+});
+
+router.delete("/meeting/:id", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const result = pool.query(
+      `
+        DELETE FROM appointments
+        WHERE id = $1;
+      `,
+      [
+        id
+      ]
+    );
+
+    res.status(200).json({ message: "삭제 성공" });
+  } catch (e) {
+    console.log("삭제 실패", e);
+    res.status(400).json({ message: "삭제 실패" });
+  }
+});
 
 export default router;

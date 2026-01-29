@@ -1,9 +1,12 @@
 import { Router } from "express";
 import axios from "axios";
+import { apiLogCall } from "./dbSave.js";
 
 const router = Router();
 
 router.get("/search", async (req, res) => {
+  const installId = String(req.header("x-install-id") || "");
+
   const q = String(req.query.q || "").trim();
   if (!q) return res.status(400).json({ message: "q is required" });
 
@@ -51,14 +54,39 @@ router.get("/search", async (req, res) => {
       return true;
     });
 
+    if (installId) {
+      Promise.all([
+        apiLogCall({ installId, apiName: "kakao.keyword_search", statusCode: kw.status }),
+        apiLogCall({ installId, apiName: "kakao.address_search", statusCode: addr.status }),
+      ]).catch(() => { });
+    }
+
     res.json({ places: merged });
   } catch (err: any) {
-    res.status(502).json({ message: "kakao api error", status: err?.response?.status, detail: err?.response?.data });
+    const status = err?.response?.status ?? 0;
+
+    const url = String(err?.config?.url || "");
+    const apiName =
+      url.includes("/keyword.json") ? "kakao.keyword_search" :
+        url.includes("/address.json") ? "kakao.address_search" :
+          "kakao.search_unknown";
+
+    if (installId) {
+      apiLogCall({ installId, apiName, statusCode: status }).catch(() => { });
+    }
+
+    return res.status(502).json({
+      message: "kakao api error",
+      status,
+      detail: err?.response?.data,
+    });
   }
 });
 
-router.get("/map-pick", async(req, res) => {
-  try{
+router.get("/map-pick", async (req, res) => {
+  const installId = String(req.header("x-install-id") || "");
+
+  try {
     const { lat, lng } = req.query;
 
     const latNum = Number(lat);
@@ -79,8 +107,8 @@ router.get("/map-pick", async(req, res) => {
     )
 
     const doc = kakaoRes.data?.documents?.[0];
-    if(!doc){
-      return res.status(404).json({message : "주소 결과가 없습니다."});
+    if (!doc) {
+      return res.status(404).json({ message: "주소 결과가 없습니다." });
     }
 
     const road = doc.road_address?.address_name;
@@ -88,9 +116,17 @@ router.get("/map-pick", async(req, res) => {
     const address = road || jibun || "";
     const buildingName = doc.road_address?.building_name;
 
-    const name =  doc.road_address?.road_name ||
-                  doc.address?.region_3depth_name ||
-                  (address ? address.split(" ").slice(-2).join(" ") : "선택한 위치");
+    const name = doc.road_address?.road_name ||
+      doc.address?.region_3depth_name ||
+      (address ? address.split(" ").slice(-2).join(" ") : "선택한 위치");
+
+    if (installId) {
+      apiLogCall({
+        installId,
+        apiName: "kakao.map_pick(re-gecode)",
+        statusCode: kakaoRes.status,
+      }).catch(() => { });
+    }
 
     return res.json({
       place: {
@@ -102,11 +138,23 @@ router.get("/map-pick", async(req, res) => {
       },
     });
 
-  }catch(err : any){
+  } catch (err: any) {
+    const status = err?.response?.status ?? 0;
+
+    const installId = String(req.header("x-install-id") || "");
+    if (installId) {
+      apiLogCall({
+        installId,
+        apiName: "kakao.map_pick(re-gecode)",
+        statusCode: status,
+      }).catch(() => { });
+    }
+
     return res.status(500).json({
       message: "reverse-geocode 실패",
       detail: err?.response?.data || String(err),
     });
   }
-})
+});
+
 export default router;
