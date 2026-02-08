@@ -80,7 +80,7 @@ router.post("/", upload.single("image"), async (req, res) => {
 
     const raw = result.text?.trim();
     if (!raw) {
-      return res.status(502).json({ message: "empty model response" });
+      return res.status(502).json({ message: "제미나이 오류 발생" });
     }
 
     const parsed = photoVerdictSchema.parse(JSON.parse(raw));
@@ -88,7 +88,7 @@ router.post("/", upload.single("image"), async (req, res) => {
     return res.json(parsed);
   } catch (err) {
     console.error("[/api/photo]", err);
-    return res.status(500).json({ message: "photo verdict failed" });
+    return res.status(500).json({ message: "사진 인증 실패패" });
   }
 });
 
