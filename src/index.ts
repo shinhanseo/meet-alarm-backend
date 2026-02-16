@@ -27,6 +27,14 @@ app.use("/api/weather", weatherSearchRouter);
 app.use("/api/save", dbSaveRouter);
 app.use("/api/photoVerdict", photoVerdict);
 
+process.on("unhandledRejection", (reason) => {
+  console.error("[unhandledRejection]", reason);
+});
+
+process.on("uncaughtException", (err) => {
+  console.error("[uncaughtException]", err);
+});
+
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on http://0.0.0.0:${PORT}`);
 });

@@ -104,7 +104,7 @@ router.post("/meeting", async (req, res) => {
 
   } catch (e) {
     console.log(e);
-    return res.status(400).json({ message: "약속 저장 오류" });
+    return res.status(500).json({ message: "약속 저장 오류" });
   }
 });
 
@@ -159,17 +159,11 @@ router.delete("/meeting/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
-    const result = pool.query(
-      `
-        DELETE FROM appointments
-        WHERE id = $1;
-      `,
-      [
-        id
-      ]
+    await pool.query(
+      `DELETE FROM appointments WHERE id = $1;`,
+      [id]
     );
-
-    res.status(200).json({ message: "삭제 성공" });
+    return res.status(200).json({ message: "삭제 성공" });
   } catch (e) {
     console.log("삭제 실패", e);
     res.status(400).json({ message: "삭제 실패" });
