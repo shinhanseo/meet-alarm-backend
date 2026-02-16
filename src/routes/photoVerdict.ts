@@ -38,31 +38,31 @@ router.post("/", upload.single("image"), async (req, res) => {
 
     // 2) 프롬프트 
     const prompt = `
-      You are a simple image classifier.
+      You are a footwear detector.
 
-      Task:
-      Decide whether the image contains any real footwear.
+      Decide if the image clearly shows real, physical footwear.
 
-      Definition of footwear:
-      - Any real shoe, sneaker, boot, sandal, slipper, or similar item.
-      - The footwear does NOT need to be worn.
-      - The footwear may be on the floor, held by a hand, partially visible, or in the background.
+      Footwear = real shoes such as sneakers, boots, sandals, slippers.
 
-      Rules:
-      - If any real footwear is visible anywhere in the image, isShoe = true.
-      - If no footwear is visible at all, isShoe = false.
-      - Feet or socks alone are NOT footwear.
-      - Illustrations, drawings, AI-generated images, or product catalog screenshots are NOT footwear.
+      Return false if:
+      - blurry, dark, small, or unclear
+      - socks or bare feet
+      - drawings or illustrations
+      - images on screens or catalogs
+      - toys or objects that only look similar
 
-      Return:
-      - isShoe (boolean)
-      - confidence (number between 0 and 1)
-      - Optionally include a short reason or labels.
+      If unsure, return false.
 
+      Return JSON:
+      {
+        "isShoe": boolean,
+        "confidence": 0~1,
+        "reason": "short"
+      }
       `;
 
     const result = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
+      model: "gemini-2.5-flash-lite",
       contents: [
         {
           inlineData: {
