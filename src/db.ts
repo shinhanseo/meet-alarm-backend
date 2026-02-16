@@ -7,6 +7,7 @@ if (!process.env.DATABASE_URL) {
 
 const u = new URL(process.env.DATABASE_URL);
 
+
 export const pool = new Pool({
   host: u.hostname,
   port: Number(u.port || 5432),
@@ -15,3 +16,5 @@ export const pool = new Pool({
   password: decodeURIComponent(u.password),
   ssl: { rejectUnauthorized: false },
 });
+
+console.log("[db] host=", u.hostname, "port=", u.port, "user=", u.username, "db=", u.pathname);
