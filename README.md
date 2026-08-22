@@ -1,11 +1,32 @@
-# 🐻 지금이니 백엔드 (RightNow Backend)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/shinhanseo/meet_alarm/main/assets/bears/right_now_icon.png" width="120" alt="지금이니 앱 아이콘" />
+</p>
 
-> **지금이니 앱의 장소 검색, 대중교통 경로 탐색, 날씨 조회, 신발 사진 판정, 약속 저장을 담당하는 Express 기반 API 서버**
+<h1 align="center">지금이니 Backend</h1>
 
-`지금이니 백엔드`는 모바일 앱이 직접 다루기 어려운 외부 API 연동과 데이터 저장을 한곳에서 처리합니다.  
-앱에서 약속을 만들면 서버는 장소/경로/날씨/사진 판정 API를 중계하고, 설치 정보와 약속 데이터, 외부 API 호출 기록을 PostgreSQL에 저장합니다.
+<p align="center">
+  <strong>경로·장소·날씨·사진 판정을 모바일 앱에 맞는 하나의 API로 연결하는 서버</strong>
+</p>
+
+<p align="center">
+  <a href="https://github.com/shinhanseo/meet_alarm"><img src="https://img.shields.io/badge/Frontend_Repo-181717?style=flat-square&logo=github&logoColor=white" alt="Frontend Repository" /></a>
+  <a href="https://apps.apple.com/kr/app/id6759585246"><img src="https://img.shields.io/badge/App_Store-0D96F6?style=flat-square&logo=appstore&logoColor=white" alt="App Store" /></a>
+  <a href="https://play.google.com/store/apps/details?id=com.imkara1.meetalarm"><img src="https://img.shields.io/badge/Google_Play-414141?style=flat-square&logo=googleplay&logoColor=white" alt="Google Play" /></a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white" alt="Node.js" />
+  <img src="https://img.shields.io/badge/Express-000000?style=flat-square&logo=express&logoColor=white" alt="Express" />
+  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL" />
+</p>
 
 ---
+
+## Overview
+
+모바일 앱이 직접 다루기 어려운 외부 API 연동과 데이터 저장을 서버에서 통합합니다. 장소 검색, 대중교통 경로, 날씨, 신발 이미지 판정 결과를 앱에서 바로 사용할 수 있는 형태로 정규화하고, 설치 정보와 약속 데이터를 PostgreSQL에 저장합니다.
+
+> **개인 프로젝트** · API와 데이터베이스 설계, 외부 서비스 연동, 서버 구현과 배포를 직접 담당했습니다.
 
 ## ✨ 핵심 기능
 
@@ -429,4 +450,3 @@ http://0.0.0.0:4000
 - 이 서버는 TypeScript strict 모드와 NodeNext 모듈 해석을 사용합니다.
 - `npm run dev`는 `tsx watch src/index.ts`로 실행됩니다.
 - 현재 별도 health check 라우트는 구현되어 있지 않습니다.
-
