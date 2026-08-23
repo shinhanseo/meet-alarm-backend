@@ -12,6 +12,7 @@
   <a href="https://github.com/shinhanseo/meet_alarm"><img src="https://img.shields.io/badge/Frontend_Repo-181717?style=flat-square&logo=github&logoColor=white" alt="Frontend Repository" /></a>
   <a href="https://apps.apple.com/kr/app/id6759585246"><img src="https://img.shields.io/badge/App_Store-0D96F6?style=flat-square&logo=appstore&logoColor=white" alt="App Store" /></a>
   <a href="https://play.google.com/store/apps/details?id=com.imkara1.meetalarm"><img src="https://img.shields.io/badge/Google_Play-414141?style=flat-square&logo=googleplay&logoColor=white" alt="Google Play" /></a>
+  <a href="https://velog.io/@imkara/series/%EC%A7%80%EA%B8%88%EC%9D%B4%EB%8B%88"><img src="https://img.shields.io/badge/Velog_Series-20C997?style=flat-square&logo=velog&logoColor=white" alt="지금이니 Velog Series" /></a>
 </p>
 
 <p align="center">
